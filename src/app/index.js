@@ -1,81 +1,67 @@
-import { StatusBar } from 'expo-status-bar';
-import { Link, Stack, useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
-import { useState } from 'react';
+export default function App() {
+  const [task, setTask] = useState('');
+  const [tasks, setTasks] = useState([]);
 
-import {
-  Text, View, Button, TextInput,
-  Pressable, SafeAreaView, ScrollView,
-  Image, Alert, StyleSheet,
-  useColorScheme
-} from 'react-native';
+  const addTask = () => {
+    if (task === '') return;
+    setTasks([...tasks, task]);
+    setTask('');
+  };
 
-import MeuComponente from '../components/MeuComponente';
-
-export default () => {
-  const isDarkMode = useColorScheme() === 'dark';
-  /*
-  let numero = 0;
-
-  function acrescentar(){
-    numero++
-    console.log(numero)
-  }
-
-  function decrescentar(){
-    numero--;
-    console.log(numero)
-  }
-  */
-
-  const [numero, setNumero] = useState(0)
-  const router = useRouter();
-
-  function acrescentar() {
-    setNumero(numero + 1)
-  }
-  function decrescentar() {
-    setNumero(numero - 1)
-  }
+  const removeTask = (index) => {
+    const newTasks = [...tasks];
+    newTasks.splice(index, 1);
+    setTasks(newTasks);
+  };
 
   return (
     <View style={styles.container}>
-      <Text>Contador: {numero}</Text>
-      <View style={styles.contador}>
-        <Button title='+' onPress={acrescentar} color={isDarkMode ? 'white' : 'black'} />
-        <Button title='-' onPress={decrescentar} color={isDarkMode ? 'white' : 'black'} />
-      </View>
+      <Text style={styles.title}>To-Do List</Text>
 
-      <Link href="/Tela1">Link Tela 1</Link>
+      <TextInput
+        placeholder="Digite uma tarefa"
+        value={task}
+        onChangeText={setTask}
+        style={styles.input}
+      />
+      <Button title="Adicionar" onPress={addTask} />
 
-      <Pressable onPress={() => router.navigate("/Tela1")}>
-        <Text>Navigate Tela 1</Text>
-      </Pressable>
-
-      {/*
-      <MeuComponente 
-        propriedade = "Texto1" 
-        num={1} />
-      <MeuComponente 
-        propriedade = "Texto2" 
-        num={2} />
-      <MeuComponente 
-        propriedade = "Texto3" 
-        num={3} />
-      */}
+      {tasks.map((t, i) => (
+        <View key={i} style={styles.taskContainer}>
+          <Text style={styles.taskText}>{t}</Text>
+          <Button title="Remover" onPress={() => removeTask(i)} />
+        </View>
+      ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: isDarkMode ? '#555':'#ddd',
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 20,
+    marginTop: 50,
   },
-  contador: {
-    flexDirection: "row",
-    gap: 10
-  }
+  title: {
+    fontSize: 24,
+    marginBottom: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#888',
+    padding: 8,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  taskContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  taskText: {
+    fontSize: 18,
+  },
 });
